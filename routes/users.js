@@ -1,40 +1,41 @@
 const express = require("express");
 const router = express.Router();
 
-// users 
+// users
 const users = [
-    {
-        name: "weasel",
-        password: "cunning",
-        id: 0
-    },
-    {
-        name: "root",
-        lastName: "toor",
-        id: 1
-    }
+  {
+    email: "weasel@weasel.com",
+    password: "cunning",
+    id: 0,
+  },
+  {
+    email: "root@root.com",
+    lastName: "toor",
+    id: 1,
+  },
 ];
 
-// add users routing below
+//  users routing
 router.get("/", (req, res) => {
     res.setHeader("Access-Control-Allow-Origin", "*");
-    res.json(users);    
+    res.json(users);
 });
 
-router.post("/", (req, res) => {
-    // console.log(req.body);
-    const user = { name: req.body.name, lastName: req.body.lastName, id: users.length }
-    users.push(user);
-    res.redirect("/users");
-});
-
-router.get("/:id", (req, res) => {
-    const findUser = users.find(user => user.id === req.params.id);
-    if (findUser === null) {
-        res.send("can't find user guv'nor");
+router.post("/login", (req, res) => {
+  const name = req.body.name;
+  const password = req.body.password;
+  // find user
+  const foundUser = users.find((user) => user.email === email);
+  if (!foundUser) {
+    res.json({ error: "User not found" });
+  } else {
+    // check passsword
+    if (password === foundUser.password) {
+      rs.json({ status: "logged-in bruh", user: foundUser });
     } else {
-        res.json(findUser);
+      res.json({ error: "Wrong password" });
     }
+  }
 });
 
 module.exports = router;
