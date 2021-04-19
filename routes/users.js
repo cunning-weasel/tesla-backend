@@ -1,39 +1,52 @@
 const express = require("express");
 const router = express.Router();
+// import lowdb
+const lowdb = require("lowdb");
+// import file interface
+const FileSync = require('lowdb/adapters/FileSync');
 
-// users
-const users = [
-  {
-    email: "weasel@weasel.com",
-    password: "cunning",
-    id: 0,
-  },
-  {
-    email: "root@root.com",
-    lastName: "toor",
-    id: 1,
-  },
-];
+// init mock db
+const adapter = new FileSync("./data/db.json");
+const db = lowdb(adapter);
 
-//  users routing
+// set defaults
+db.defaults({ email: "weasel@weasels.com", password: "weasel" }).write();
+
+// add user
+db.get("email", "password").write();
+console.log("pretending to user-state server-side");
+
+// list all users
 router.get("/", (req, res) => {
-    res.setHeader("Access-Control-Allow-Origin", "*");
-    res.json(users);
+  // res.setHeader("Access-Control-Allow-Origin", "*");
+  res.json(db.get("users").value());
 });
 
+// register new users - write new entry into the users
+router.post("/register", (req, res) => {
+  db.get("users").push(req.body).write();
+  res.json(db.get("users").value());
+});
+
+// login user
 router.post("/login", (req, res) => {
-  const name = req.body.name;
+  const email = req.body.email;
   const password = req.body.password;
-  // find user
-  const foundUser = users.find((user) => user.email === email);
+  // get user from db
+  const foundUser = db.get("users").find({email: email}).value();
   if (!foundUser) {
-    res.json({ error: "User not found" });
+    res.json({ error: "User not found brethren!" });
   } else {
     // check passsword
     if (password === foundUser.password) {
-      rs.json({ status: "logged-in bruh", user: foundUser });
+      const loggedInUser = foundUser;
+      delete loggedInUser.password;
+      rs.json({ 
+        status: "logged-in bruh", 
+        user: loggedInUser 
+      });
     } else {
-      res.json({ error: "Wrong password" });
+      res.json({error: "Wrong password brethren!!!!"});
     }
   }
 });
