@@ -16,7 +16,7 @@ db.defaults({ email: "weasel@weasels.com", password: "weasel" }).write();
 
 // add user
 db.get("email", "password").write();
-console.log("pretending to user-state server-side");
+console.log("pretending to state server-side");
 
 // list all users
 router.get("/", (req, res) => {
